@@ -6,7 +6,7 @@ import cv2
 import showImg
 from Operaciones import gray, bw, resize, rotate, aritOP, logOP, interpol
 from Filtros import blur, gaussBlur, sharpen, canny, emboss, dilate
-from Morfologicas import Open
+from Morfologicas import Open, close, gradient
 
 # Variables globales para almacenar las imagenes originales
 img = None
@@ -126,6 +126,15 @@ def appOpening():
         openImg = Open.opening(img)
         showImg.show_img(openImg, "Apertura")
 
+def appClosing():
+    if img is not None:
+        closeImg = close.closing(img)
+        showImg.show_img(closeImg,"Cierre")
+
+def appGradient():
+    if img is not None:
+        boardedImg = gradient.boardDetection(img)
+        showImg.show_img(boardedImg,"Deteccion de Bordes")
 
 # # Crear la interfaz gráfica
 # root = tk.Tk()
@@ -210,17 +219,18 @@ btn_sharpen = tk.Button(frame_filters, text="Nitidez", command=appSharpen)
 btn_canny = tk.Button(frame_filters, text="Canny", command=appCanny)
 btn_emboss = tk.Button(frame_filters, text="Relieve", command=appEmboss)
 btn_dilate = tk.Button(frame_filters, text="Dilatación", command=appDilate)
-btn_open = tk.Button(frame_filters, text="Apertura", command=appOpening)
 
 # Agregar botones de filtros al `frame_filters`
-for btn in [btn_blur, btn_gaussBlur, btn_sharpen, btn_canny, btn_emboss, btn_dilate, btn_open]:
+for btn in [btn_blur, btn_gaussBlur, btn_sharpen, btn_canny, btn_emboss, btn_dilate]:
     btn.pack(pady=5)
 
 # Botones Morfologicos
-# btn_open = tk.Button(frame_filters, text="Apertura", command=appOpening)
+btn_open = tk.Button(frame_morph, text="Apertura", command=appOpening)
+btn_close = tk.Button(frame_morph, text="Cierre", command=appClosing)
+btn_gradient = tk.Button(frame_morph, text="Deteccion de bordes", command=appGradient)
 
 # Agregar botones de filtros al `frame_filters`
-for btn in [btn_open]:
+for btn in [btn_open,btn_close,btn_gradient]:
     btn.pack(pady=5)
 
 # Ejecutar la aplicación
