@@ -7,6 +7,7 @@ import showImg
 from Operaciones import gray, bw, resize, rotate, aritOP, logOP, interpol
 from Filtros import blur, gaussBlur, sharpen, canny, emboss, dilate
 from Morfologicas import Open, close, gradient
+from Segmentacion import umbral
 
 # Variables globales para almacenar las imagenes originales
 img = None
@@ -45,6 +46,7 @@ def upload_img():
         btn_operations.pack(pady=5)
         btn_filters.pack(pady=5)
         btn_morph.pack(pady=5)
+        btn_segment.pack(pady=5)
 
 
 
@@ -136,6 +138,13 @@ def appGradient():
         boardedImg = gradient.boardDetection(img)
         showImg.show_img(boardedImg,"Deteccion de Bordes")
 
+def appThreshold():
+    if img is not None:
+        thresholded_img = umbral.thresholding(gray.grayscale(img))
+        showImg.show_img(thresholded_img,"Deteccion de Bordes")
+        thresholded_img2 = umbral.thresholding(thresholded_img)
+        showImg.show_img(thresholded_img2,"Deteccion de Bordes")
+
 # # Crear la interfaz gráfica
 # root = tk.Tk()
 # root.title("Procesador de Imágenes")
@@ -175,11 +184,19 @@ def show_filters():
         frame_filters.pack(pady=10)  # Mostrar
 
 def show_morph():
-    """Muestra u oculta los botones de filtros."""
+    """Muestra u oculta los botones de los filtros morfologicos."""
     if frame_morph.winfo_ismapped():
         frame_morph.pack_forget()  # Ocultar si ya está visible
     else:
         frame_morph.pack(pady=10)  # Mostrar
+
+def show_segment():
+    """Muestra u oculta los botones de segmentacion."""
+    if frame_segment.winfo_ismapped():
+        frame_segment.pack_forget()  # Ocultar si ya está visible
+    else:
+        frame_segment.pack(pady=10)  # Mostrar
+
 
 # Crear la ventana principal
 root = tk.Tk()
@@ -193,11 +210,13 @@ btn_upload.pack(pady=20)
 btn_operations = tk.Button(root, text="Mostrar Operaciones", command=show_operations)
 btn_filters = tk.Button(root, text="Mostrar Filtros", command=show_filters)
 btn_morph = tk.Button(root, text="Mostrar Morfologicas", command=show_morph)
+btn_segment = tk.Button(root, text="Mostrar Segmentacion", command=show_segment)
 
 # --- Marcos para cada grupo de botones ---
 frame_operations = tk.Frame(root)
 frame_filters = tk.Frame(root)
 frame_morph = tk.Frame(root)
+frame_segment = tk.Frame(root)
 
 # Botones de operaciones
 btn_gray = tk.Button(frame_operations, text="Escala de Grises", command=appGrayscale)
@@ -231,6 +250,13 @@ btn_gradient = tk.Button(frame_morph, text="Deteccion de bordes", command=appGra
 
 # Agregar botones de filtros al `frame_filters`
 for btn in [btn_open,btn_close,btn_gradient]:
+    btn.pack(pady=5)
+
+# Botones Segmentacion
+btn_threshold = tk.Button(frame_segment, text="umbralizacion", command=appThreshold)
+
+# Agregar botones de filtros al `frame_filters`
+for btn in [btn_threshold]:
     btn.pack(pady=5)
 
 # Ejecutar la aplicación
