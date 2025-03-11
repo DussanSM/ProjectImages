@@ -2,12 +2,13 @@ import tkinter as tk
 from tkinter import filedialog
 
 import cv2
+import numpy as np
 
 import showImg
 from Operaciones import gray, bw, resize, rotate, aritOP, logOP, interpol
 from Filtros import blur, gaussBlur, sharpen, canny, emboss, dilate
 from Morfologicas import Open, close, gradient
-from Segmentacion import umbral, segCanny, contour, k_means, watershed
+from Segmentacion import segmentColor, umbral, segCanny, contour, k_means, watershed, regions, segmentColor, segGrayScale
 
 # Variables globales para almacenar las imagenes originales
 img = None
@@ -26,21 +27,6 @@ def upload_img():
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
         showImg.show_img(img, "Imagen Original")
-
-        # # Mostrar los botones de procesamiento
-        # btn_gray.pack(pady=5)
-        # btn_bw.pack(pady=5)
-        # btn_resize.pack(pady=5)
-        # btn_rotate.pack(pady=5)
-        # btn_aritOP.pack(pady=5)
-        # btn_logOP.pack(pady=5)
-        # btn_interpol.pack(pady=5)
-        # btn_blur.pack(pady=5)
-        # btn_gaussBlur.pack(pady=5)
-        # btn_sharpen.pack(pady=5)
-        # btn_canny.pack(pady=5)
-        # btn_emboss.pack(pady=5)
-        # btn_dilate.pack(pady=5)
 
         # Mostrar solo los botones de categorías (Operaciones y Filtros)
         btn_operations.pack(pady=5)
@@ -161,29 +147,36 @@ def appWatershed():
         watershedImg = watershed.segWatershed(img)
         showImg.show_img(watershedImg,"Segmentaciòn Watershed")
 
-# # Crear la interfaz gráfica
-# root = tk.Tk()
-# root.title("Procesador de Imágenes")
+def appGrowthRegions():
+    if img is not None:
+        grayImg = gray.grayscale(img)
 
-# btn_upload = tk.Button(root, text="Cargar Imagen", command=upload_img)
-# btn_upload.pack(pady=70)
+        # Definir los seed points (ejemplo: [100, 100] y [200, 200])
+        seed_points = [(100, 100), (200, 200)]
 
-# # Botones de procesamiento (inicialmente ocultos)
-# btn_gray = tk.Button(root, text="Escala de Grises", command=appGrayscale)
-# btn_bw = tk.Button(root, text="Blanco y Negro", command=appBlacknWhite)
-# btn_resize = tk.Button(root, text="Redimensiòn", command=appResize)
-# btn_rotate = tk.Button(root, text="Rotar Imagen", command=appRotate)
-# btn_aritOP = tk.Button(root, text="Operaciones Aritmeticas", command=appArit)
-# btn_logOP = tk.Button(root, text="Operaciones Lógicas", command=appLogic)
-# btn_interpol = tk.Button(root, text="Interpolación", command=appInterpolation)
-# btn_blur = tk.Button(root, text="Difuminar", command=appBlur)
-# btn_gaussBlur = tk.Button(root, text="Desenfoque Gaussiano", command=appGaussBlur)
-# btn_sharpen = tk.Button(root, text="Nitidez", command=appSharpen)
-# btn_canny = tk.Button(root, text="Canny", command=appCanny)
-# btn_emboss = tk.Button(root, text="Relieve", command=appEmboss)
-# btn_dilate = tk.Button(root, text="Dilatación", command=appDilate)
+        # Establecer un umbral para el crecimiento de la región
+        threshold = 20
 
-# root.mainloop()
+        # Aplicar la función de crecimiento de regiones
+        result_mask = regions.region_growing(seed_points, grayImg, threshold)
+
+        showImg.show_img(result_mask,"Crecimiento por Regiones")
+
+def appSegColor():
+    if img is not None:
+
+        segColorImg = segmentColor.detectColor(img)
+        showImg.show_img(segColorImg,"Detectar color")
+
+def appSegGray():
+    if img is not None:
+
+        grayImg = gray.grayscale(img)
+
+        result = segGrayScale.segmentGray(grayImg)
+        showImg.show_img(result, "Detectar Escala de Grises")
+
+
 
 def show_operations():
     """Muestra u oculta los botones de operaciones."""
@@ -274,9 +267,12 @@ btn_segCanny = tk.Button(frame_segment, text="Segmentacion Canny", command=appSe
 btn_contour = tk.Button(frame_segment, text="Contornos", command=appContour)
 btn_kmeans = tk.Button(frame_segment, text="k-means", command=appKmeans)
 btn_watershed = tk.Button(frame_segment, text="watershed", command=appWatershed)
+btn_regions = tk.Button(frame_segment, text="Crecimiento de Regiones", command=appGrowthRegions)
+btn_segColor = tk.Button(frame_segment, text="Detectar Color", command=appSegColor)
+btn_segGray = tk.Button(frame_segment, text="Detectar Grises", command=appSegGray)
 
 # Agregar botones de filtros al `frame_filters`
-for btn in [btn_threshold,btn_segCanny,btn_contour,btn_kmeans,btn_watershed]:
+for btn in [btn_threshold,btn_segCanny,btn_contour,btn_kmeans,btn_watershed,btn_regions,btn_segColor,btn_segGray]:
     btn.pack(pady=5)
 
 # Ejecutar la aplicación
