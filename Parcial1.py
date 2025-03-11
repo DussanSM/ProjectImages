@@ -7,7 +7,7 @@ import showImg
 from Operaciones import gray, bw, resize, rotate, aritOP, logOP, interpol
 from Filtros import blur, gaussBlur, sharpen, canny, emboss, dilate
 from Morfologicas import Open, close, gradient
-from Segmentacion import umbral
+from Segmentacion import umbral, segCanny, contour, k_means, watershed
 
 # Variables globales para almacenar las imagenes originales
 img = None
@@ -140,10 +140,26 @@ def appGradient():
 
 def appThreshold():
     if img is not None:
-        thresholded_img = umbral.thresholding(gray.grayscale(img))
-        showImg.show_img(thresholded_img,"Deteccion de Bordes")
-        thresholded_img2 = umbral.thresholding(thresholded_img)
-        showImg.show_img(thresholded_img2,"Deteccion de Bordes")
+        umbral.thresholding(img)
+
+def appSegCanny():
+    if img is not None:
+        segCanny.segmentCanny(img)
+
+def appContour():
+    if img is not None:
+        conturImg = contour.segContour(img)
+        showImg.show_img(conturImg,"Segmentaciòn por Contornos")
+
+def appKmeans():
+    if img is not None:
+        kmeansImg = k_means.kmeans(img)
+        showImg.show_img(kmeansImg,"Segmentaciòn k-means")
+
+def appWatershed():
+    if img is not None:
+        watershedImg = watershed.segWatershed(img)
+        showImg.show_img(watershedImg,"Segmentaciòn Watershed")
 
 # # Crear la interfaz gráfica
 # root = tk.Tk()
@@ -254,9 +270,13 @@ for btn in [btn_open,btn_close,btn_gradient]:
 
 # Botones Segmentacion
 btn_threshold = tk.Button(frame_segment, text="umbralizacion", command=appThreshold)
+btn_segCanny = tk.Button(frame_segment, text="Segmentacion Canny", command=appSegCanny)
+btn_contour = tk.Button(frame_segment, text="Contornos", command=appContour)
+btn_kmeans = tk.Button(frame_segment, text="k-means", command=appKmeans)
+btn_watershed = tk.Button(frame_segment, text="watershed", command=appWatershed)
 
 # Agregar botones de filtros al `frame_filters`
-for btn in [btn_threshold]:
+for btn in [btn_threshold,btn_segCanny,btn_contour,btn_kmeans,btn_watershed]:
     btn.pack(pady=5)
 
 # Ejecutar la aplicación
